@@ -1,0 +1,40 @@
+services:
+  app:
+    build: 
+      args:
+        - user=nurul
+        - uid=1000
+      context: ./
+      dockerfile: Dockerfile
+    container_name: bumdesma-app
+    volumes:
+      - ./:/var/www
+    networks:
+      - laravel
+  db:
+    image: postgres:latest
+    container_name: bumdesma-db
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - laravel
+  nginx:
+    image: nginx:latest
+    container_name: bumdesma-nginx
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - laravel
+      
+networks:
+  laravel:
+    driver: bridge
+volumes:
+  pg-data:
